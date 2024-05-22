@@ -76,7 +76,7 @@ func (h *HammingHandler) DataLink(c *gin.Context) {
 
 	log.Println(responseJson)
 
-	apiUrl := "127.0.0.1:3000/transfer"
+	apiUrl := "http://127.0.0.1:3000/transfer"
 	log.Println("URL API:", apiUrl)
 	log.Println(responseJson)
 	resp, err := http.Post(apiUrl, "application/json", bytes.NewBuffer(responseJson))
