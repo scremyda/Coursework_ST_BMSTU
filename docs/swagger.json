@@ -1,0 +1,101 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Отправка текста. Передаваемую информацию защитить передаваемую информацию [7,4]-кодом Хэмминга. Длина сегмента (X) 150 байт, период сборки сегментов (N) 2 секунд, вероятность ошибки (P) 8%, вероятность потери кадра (R) 1%.",
+        "title": "Вариант 11",
+        "contact": {
+            "name": "Дмитрий Белозеров ИУ5-64Б",
+            "url": "http://t.me/belozerovmsk"
+        }
+    },
+    "paths": {
+        "/code": {
+            "post": {
+                "description": "Ручка защищает передаваемую информацию [7,4]-кодом Хэмминга.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channel"
+                ],
+                "summary": "код Хэмминга",
+                "parameters": [
+                    {
+                        "description": "Данные для передачи",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Segment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный запрос",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Пакет утерян",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "boolean"
+                },
+                "segment": {
+                    "$ref": "#/definitions/models.Segment"
+                }
+            }
+        },
+        "models.Segment": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "segment_index": {
+                    "type": "integer"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "total_length": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
