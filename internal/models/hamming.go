@@ -12,8 +12,8 @@ type Segment struct {
 }
 
 type Response struct {
-	Segment Segment
-	Error   bool `json:"error"`
+	Segment Segment `json:"segment"`
+	Error   bool    `json:"error"`
 }
 
 type ChannelLevel struct {
