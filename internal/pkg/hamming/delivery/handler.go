@@ -34,19 +34,21 @@ func NewHammingHandler(uc hamming.Usecase) *HammingHandler {
 // @Router /code [post]
 func (h *HammingHandler) DataLink(c *gin.Context) {
 	var (
-		segment models.Segment
-		success bool
-		err     error
+		segment      models.Segment
+		success      bool
+		err          error
+		responseData models.Response
 	)
-	responseData := models.Response{
-		Segment: segment,
-	}
 
 	if err := c.ShouldBindJSON(&segment); err != nil {
 		log.Println(errors.Join(err, errors.New("invalid data format")))
 		c.JSON(http.StatusBadRequest, responseData)
 
 		return
+	}
+
+	responseData = models.Response{
+		Segment: segment,
 	}
 
 	responseData.Segment.Payload, success, responseData.Error, err = h.uc.ChannelTransmit(segment.Payload)
