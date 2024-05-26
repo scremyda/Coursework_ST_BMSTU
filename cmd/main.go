@@ -27,7 +27,10 @@ func run() error {
 	usecase := usecase.NewHammingUsecase()
 	handler := handler.NewHammingHandler(usecase)
 
-	router.POST("/code", handler.DataLink)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	{
+		router.POST("/code", handler.DataLink)
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
+
 	return router.Run("127.0.0.1:5000")
 }
