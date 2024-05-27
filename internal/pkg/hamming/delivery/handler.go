@@ -34,10 +34,10 @@ func NewHammingHandler(uc hamming.Usecase) *HammingHandler {
 // @Router /code [post]
 func (h *HammingHandler) DataLink(c *gin.Context) {
 	var (
-		segment      models.Segment  // Сегмент данных, получаемый из запроса
-		success      bool            // Успешность передачи данных
-		err          error           // Переменная для ошибок
-		responseData models.Response // Ответ на запрос
+		segment models.Segment // Сегмент данных, получаемый из запроса
+		success bool           // Успешность передачи данных
+		err     error          // Переменная для ошибок
+		//responseData models.Response // Ответ на запрос
 	)
 
 	// Привязываем JSON из запроса к структуре segment
@@ -45,22 +45,25 @@ func (h *HammingHandler) DataLink(c *gin.Context) {
 		// Логируем ошибку при неверном формате данных
 		log.Println(errors.Join(err, errors.New("invalid data format")))
 		// Отправляем ответ с ошибкой 400 (Bad Request)
-		c.JSON(http.StatusBadRequest, responseData)
+		c.JSON(http.StatusBadRequest, segment)
 		return
 	}
 
 	// Инициализируем ответ с полученным сегментом
-	responseData = models.Response{
-		Segment: segment,
-	}
+	//responseData = models.Response{
+	//	Segment: segment,
+	//}
 
 	// Передаем данные через канал Хэмминга
-	responseData.Segment.Payload, success, responseData.Error, err = h.uc.ChannelTransmit(segment.Payload)
+	segment.Payload, success, segment.Error, err = h.uc.ChannelTransmit(segment.Payload)
+	log.Println(segment.Payload)
+
+	log.Println(segment)
 	if err != nil {
 		// Логируем ошибку при неверной длине массива бит
 		log.Println(errors.Join(err, errors.New("invalid len of bit array")))
 		// Отправляем ответ с ошибкой 500 (Internal Server Error)
-		c.JSON(http.StatusInternalServerError, responseData)
+		c.JSON(http.StatusInternalServerError, segment)
 		return
 	}
 
@@ -69,27 +72,27 @@ func (h *HammingHandler) DataLink(c *gin.Context) {
 		// Логируем сообщение о потере сегмента
 		log.Println(errors.New("segment is lost"))
 		// Отправляем ответ с ошибкой 409 (Conflict)
-		c.JSON(http.StatusConflict, responseData)
+		c.JSON(http.StatusConflict, segment)
 		return
 	}
 
 	// Логируем ответные данные
-	log.Println(responseData)
+	log.Println(segment)
 
 	// Преобразуем ответные данные в JSON
-	responseJson, err := json.Marshal(responseData)
+	responseJson, err := json.Marshal(segment)
 	if err != nil {
 		// Логируем ошибку при преобразовании в JSON
 		log.Println(errors.Join(err, errors.New("internal error")))
 		// Отправляем ответ с ошибкой 500 (Internal Server Error)
-		c.JSON(http.StatusInternalServerError, responseData)
+		c.JSON(http.StatusInternalServerError, segment)
 		return
 	}
 
 	// Логируем JSON-данные и URL API
 	log.Println(responseJson)
 
-	apiUrl := "http://127.0.0.1:3000/transfer"
+	apiUrl := "http://192.168.227.33:8000/transfer/"
 	log.Println("URL API:", apiUrl)
 	log.Println(responseJson)
 
@@ -99,7 +102,7 @@ func (h *HammingHandler) DataLink(c *gin.Context) {
 		// Логируем ошибку при отправке данных
 		log.Println(errors.Join(err, errors.New("error send to transport layer")))
 		// Отправляем ответ с ошибкой 400 (Bad Request)
-		c.JSON(http.StatusBadRequest, responseData)
+		c.JSON(http.StatusBadRequest, segment)
 		return
 	}
 
@@ -107,11 +110,11 @@ func (h *HammingHandler) DataLink(c *gin.Context) {
 
 	// Логируем код состояния ответа
 	log.Println(resp.StatusCode)
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent {
 		// Логируем ошибку при неверном коде состояния
 		log.Println(errors.Join(err, errors.New("bad status code at transport layer")))
 		// Отправляем ответ с ошибкой 400 (Bad Request)
-		c.JSON(http.StatusBadRequest, responseData)
+		c.JSON(http.StatusBadRequest, segment)
 		return
 	}
 

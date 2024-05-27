@@ -32,5 +32,5 @@ func run() error {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-	return router.Run("127.0.0.1:5000")
+	return router.Run("192.168.227.224:5000")
 }

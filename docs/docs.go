@@ -86,9 +86,6 @@ const docTemplate = `{
         "models.Segment": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "payload": {
                     "type": "string"
                 },

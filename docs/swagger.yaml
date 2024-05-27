@@ -8,8 +8,6 @@ definitions:
     type: object
   models.Segment:
     properties:
-      id:
-        type: integer
       payload:
         type: string
       segment_index:
